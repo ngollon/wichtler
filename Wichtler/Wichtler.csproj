@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.2.2\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Ookii.CommandLine">
+      <HintPath>..\packages\Ookii.CommandLine.2.2\lib\Ookii.CommandLine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,11 +47,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arguments.cs" />
+    <Compile Include="Configuration\CommandLine\CommandLineParser.cs" />
+    <Compile Include="Configuration\CommandLine\ICommandLineParser.cs" />
+    <Compile Include="Configuration\Files\CsvParser.cs" />
+    <Compile Include="Configuration\Files\ICsvParser.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="DemoInputFile.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
