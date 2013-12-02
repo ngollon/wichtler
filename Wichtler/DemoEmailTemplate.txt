@@ -1,0 +1,6 @@
+﻿Wichtelzuteilung für {0}
+Hallo {0}!
+
+Du darfst dieses Jar {1} bewichteln!
+
+Gruß
