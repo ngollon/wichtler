@@ -53,7 +53,7 @@ namespace Wichtler
             {
                 foreach (var assignment in assignments)
                 {
-                    MailMessage message = new MailMessage(new MailAddress(assignment.Key.Email), new MailAddress(assignment.Value.Email))
+                    MailMessage message = new MailMessage(new MailAddress("jens@ameskamp.de"), new MailAddress(assignment.Value.Email))
                     {
                         Subject = string.Format("Wichtelzuteilung für {0}", assignment.Key.Name),
                         Body = string.Format("Hallo {0}!\n\n Du darfst dieses Jahr {1} bewichteln.\n\nBis Weihnachten!\nJens", assignment.Key.Name, assignment.Value.FullName),
@@ -63,6 +63,7 @@ namespace Wichtler
                     var client = new SmtpClient(arguments.SmtpServer)
                     {
                         Credentials = credentials,
+                        EnableSsl = true,
                     };
 
                     try

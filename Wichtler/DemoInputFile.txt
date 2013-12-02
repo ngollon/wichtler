@@ -1,6 +1,3 @@
 ﻿Name,FullName,Family,Email
-Dave,Big Dave,1,dave@example.com
-Dave,Medium Dave,1,medium_dave@example.com
-Albert,,2,albert@example.com
-Susan,,2,susan@example.com
-
+Jens,den Schatz,A,jens@ameskamp.de
+Kerstin,,B,kerstin@ameskamp.de
