@@ -62,7 +62,7 @@ namespace Wichtler
 
                 foreach (var assignment in assignments)
                 {
-                    MailMessage message = new MailMessage(new MailAddress("jens@ameskamp.de"), new MailAddress(assignment.Value.Email))
+                    MailMessage message = new MailMessage(new MailAddress("jens@ameskamp.de"), new MailAddress(assignment.Key.Email))
                     {
                         Subject = string.Format(subject, assignment.Key.Name),
                         Body = string.Format(body, assignment.Key.Name, assignment.Value.FullName),
