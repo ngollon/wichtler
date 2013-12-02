@@ -25,6 +25,9 @@ namespace Wichtler
         public string SmtpUsername { get; set; }
 
         [CommandLineArgument(Position = 5)]
-        public string SmtpPassword { get; set; }      
+        public string SmtpPassword { get; set; }
+
+        [CommandLineArgument(Position = 6)]
+        public string EmailTemplateFile { get; set; }
     }
 }

@@ -29,6 +29,10 @@ namespace Wichtler
             if (!csvParser.TryParse<Person>(arguments.InputFile, out people))
                 Abort("Input file not in correct format.");
 
+            if(!string.IsNullOrEmpty(arguments.SmtpServer)
+                && !File.Exists(arguments.EmailTemplateFile))
+                Abort("You need to specify an Email template");
+
             var stopwatch = Stopwatch.StartNew();
             IList<Person> shuffled;
             while (true)
@@ -51,12 +55,17 @@ namespace Wichtler
             int current = 0;
             if (!string.IsNullOrEmpty(arguments.SmtpServer))
             {
+                // Read email template
+                var templateText = File.ReadAllText(arguments.EmailTemplateFile);
+                var subject = templateText.Substring(0, templateText.IndexOf(Environment.NewLine));
+                var body = templateText.Substring(templateText.IndexOf(Environment.NewLine));
+
                 foreach (var assignment in assignments)
                 {
                     MailMessage message = new MailMessage(new MailAddress(assignment.Key.Email), new MailAddress(assignment.Value.Email))
                     {
-                        Subject = string.Format("Wichtelzuteilung für {0}", assignment.Key.Name),
-                        Body = string.Format("Hallo {0}!\n\n Du darfst dieses Jahr {1} bewichteln.\n\nBis Weihnachten!\nJens", assignment.Key.Name, assignment.Value.FullName),
+                        Subject = string.Format(subject, assignment.Key.Name),
+                        Body = string.Format(body, assignment.Key.Name, assignment.Value.FullName),
                     };
 
                     var credentials = new NetworkCredential(arguments.SmtpUsername, arguments.SmtpPassword);
@@ -96,7 +105,9 @@ namespace Wichtler
                 for (int i = 0; i < people.Count; i++)
                     Console.WriteLine("{0} -> {1}", people[i].FullName, shuffled[i].FullName);
 
+#if DEBUG
             Console.ReadLine();
+#endif
         }
 
         private static bool IsValid(IList<Person> people, IList<Person> assignments)

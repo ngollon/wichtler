@@ -30,7 +30,7 @@ namespace Wichtler.Configuration.Files
                 value = null;
                 return false;
             }
-            catch (CsvHelper.CsvHelperException ex)
+            catch (CsvHelper.CsvHelperException)
             {
                 value = null;
                 return false;
