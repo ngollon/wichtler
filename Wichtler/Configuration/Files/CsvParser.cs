@@ -20,6 +20,7 @@ namespace Wichtler.Configuration.Files
                 using (var fileReader = new StreamReader(file))
                 using (var csvReader = new CsvHelper.CsvReader(fileReader, new CsvHelper.Configuration.CsvConfiguration() { Encoding = Encoding.UTF8 }))
                 {
+                    csvReader.Configuration.RegisterClassMap<PersonCsvMap>();
                     value = csvReader.GetRecords<T>().ToList();
                     return true;
                 }
@@ -29,7 +30,7 @@ namespace Wichtler.Configuration.Files
                 value = null;
                 return false;
             }
-            catch (CsvHelper.CsvHelperException)
+            catch (CsvHelper.CsvHelperException ex)
             {
                 value = null;
                 return false;

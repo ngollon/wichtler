@@ -29,5 +29,8 @@ namespace Wichtler
 
         [CommandLineArgument(Position = 6)]
         public string EmailTemplateFile { get; set; }
+
+        [CommandLineArgument(Position = 7, DefaultValue = null, IsRequired = false)]
+        public string PreviousYear { get; set; }
     }
 }

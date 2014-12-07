@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Wichtler.Configuration.CommandLine;
 using Wichtler.Configuration.Files;
@@ -24,12 +25,22 @@ namespace Wichtler
             if (!File.Exists(arguments.InputFile))
                 Abort("Input file does not exist");
 
+            if (!string.IsNullOrEmpty(arguments.PreviousYear) && !File.Exists(arguments.PreviousYear))
+                Abort("Previous year import file does not exist.");
+
+
             IList<Person> people;
             var csvParser = new CsvParser();
             if (!csvParser.TryParse<Person>(arguments.InputFile, out people))
                 Abort("Input file not in correct format.");
 
-            if(!string.IsNullOrEmpty(arguments.SmtpServer)
+            if (File.Exists(arguments.PreviousYear))
+            {
+                if (!TryParsePreviousYearAssignments(File.ReadAllLines(arguments.PreviousYear), people))
+                    Abort("Previous year import failed.");
+            }
+
+            if (!string.IsNullOrEmpty(arguments.SmtpServer)
                 && !File.Exists(arguments.EmailTemplateFile))
                 Abort("You need to specify an Email template");
 
@@ -50,7 +61,7 @@ namespace Wichtler
             for (int i = 0; i < people.Count; i++)
                 assignments.Add(people[i], shuffled[i]);
 
-            Console.WriteLine("\nAssignment completed");
+            Console.WriteLine("\nAssignment completed.");
 
             int current = 0;
             if (!string.IsNullOrEmpty(arguments.SmtpServer))
@@ -97,10 +108,10 @@ namespace Wichtler
                 using (var writer = new StreamWriter(arguments.OutputFile))
                     foreach (var assignment in assignments)
                     {
-                        writer.WriteLine("{0} ({1}) -> {2} ({3})", assignment.Key.FullName, assignment.Key.Email, assignment.Value.FullName, assignment.Value.Email);                     
+                        writer.WriteLine("{0} ({1}) -> {2} ({3})", assignment.Key.FullName, assignment.Key.Email, assignment.Value.FullName, assignment.Value.Email);
                     }
                 Console.WriteLine("Wrote {0} assignments to output file.", assignments.Count);
-            }            
+            }
 
             if (string.IsNullOrEmpty(arguments.OutputFile) && string.IsNullOrEmpty(arguments.SmtpServer))
                 for (int i = 0; i < people.Count; i++)
@@ -111,11 +122,49 @@ namespace Wichtler
 #endif
         }
 
+        private static bool TryParsePreviousYearAssignments(string[] assignmentLines, IList<Person> people)
+        {
+            foreach (var line in assignmentLines)
+            {
+                var match = Regex.Match(line, @"^([^\(]*) \(([^\)]*)\) -> ([^\(]*) \(([^\)]*)\)$");
+                if (!match.Success)
+                {
+                    Abort(string.Format("Invalid line in previous year file: {0}", line));
+                    return false;
+                }
+                string fromName = match.Groups[1].Value;
+                string fromEmail = match.Groups[2].Value;
+                string toName = match.Groups[3].Value;
+                string toEmail = match.Groups[4].Value;
+
+                Person from = people.SingleOrDefault(p => p.FullName == fromName && p.Email == fromEmail);
+                Person to = people.SingleOrDefault(p => p.FullName == toName && p.Email == toEmail);
+
+                if (from == null)
+                {
+                    Console.WriteLine("Unknown Wichtel: {0} ({1})", fromName, fromEmail);
+                    continue;
+                }
+                if (to == null)
+                {
+                    Console.WriteLine("Unknown Wichtelee: {0} ({1})", toName, toEmail);
+                    continue;
+                }
+
+                from.ForbiddenAssignments.Add(to);
+            }
+            return true;
+        }
+
         private static bool IsValid(IList<Person> people, IList<Person> assignments)
         {
             for (int i = 0; i < people.Count; i++)
+            {
                 if (people[i].Family == assignments[i].Family)
                     return false;
+                if (people[i].ForbiddenAssignments.Contains(assignments[i]))
+                    return false;
+            }
             return true;
         }
 
