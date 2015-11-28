@@ -25,18 +25,17 @@ namespace Wichtler
             if (!File.Exists(arguments.InputFile))
                 Abort("Input file does not exist");
 
-            if (!string.IsNullOrEmpty(arguments.PreviousYear) && !File.Exists(arguments.PreviousYear))
+            if (arguments.PreviousYearFiles.Any(file => !File.Exists(file)))
                 Abort("Previous year import file does not exist.");
-
 
             IList<Person> people;
             var csvParser = new CsvParser();
             if (!csvParser.TryParse<Person>(arguments.InputFile, out people))
                 Abort("Input file not in correct format.");
 
-            if (File.Exists(arguments.PreviousYear))
+            foreach(var file in arguments.PreviousYearFiles)
             {
-                if (!TryParsePreviousYearAssignments(File.ReadAllLines(arguments.PreviousYear), people))
+                if (!TryParsePreviousYearAssignments(File.ReadAllLines(file), people))
                     Abort("Previous year import failed.");
             }
 
@@ -137,8 +136,8 @@ namespace Wichtler
                 string toName = match.Groups[3].Value;
                 string toEmail = match.Groups[4].Value;
 
-                Person from = people.SingleOrDefault(p => p.FullName == fromName && p.Email == fromEmail);
-                Person to = people.SingleOrDefault(p => p.FullName == toName && p.Email == toEmail);
+                Person from = people.SingleOrDefault(p => p.FullName == fromName);
+                Person to = people.SingleOrDefault(p => p.FullName == toName);
 
                 if (from == null)
                 {

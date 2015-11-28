@@ -31,6 +31,16 @@ namespace Wichtler
         public string EmailTemplateFile { get; set; }
 
         [CommandLineArgument(Position = 7, DefaultValue = null, IsRequired = false)]
-        public string PreviousYear { get; set; }
+        public string PreviousYears { get; set; }
+
+        public string[] PreviousYearFiles
+        {
+            get
+            {
+                if (PreviousYears == null)
+                    return new string[0];
+                return PreviousYears.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
     }
 }

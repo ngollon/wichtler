@@ -1,10 +1,8 @@
 ﻿using CsvHelper;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Wichtler.Configuration.Files
 {
@@ -30,7 +28,7 @@ namespace Wichtler.Configuration.Files
                 value = null;
                 return false;
             }
-            catch (CsvHelper.CsvHelperException ex)
+            catch (CsvHelperException)
             {
                 value = null;
                 return false;
